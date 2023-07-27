@@ -7,22 +7,19 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Download the project
+    - name: Download the Repository
       uses: actions/checkout@v2
 
-    - name: Setup
+    - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Restore Nuget
+    - name: Compile (Release)
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore .
+      run: msbuild /m /p:Configuration=Release
 
-    - name: Compile (release)
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m .
-
-    - name: Uploading artifact (DLL file)
+    - name: Uploading artifact (Release)
       uses: actions/upload-artifact@v2
       with:
         name: UEFN Unlocker
         path: x64/Release/UEFN-Unlocker.dll
+        if-no-files-found: error
