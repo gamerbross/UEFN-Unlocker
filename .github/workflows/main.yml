@@ -1,0 +1,28 @@
+name: Building
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Download the project
+      uses: actions/checkout@v2
+
+    - name: Setup
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Restore Nuget
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: nuget restore .
+
+    - name: Compile (release)
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /m .
+
+    - name: Uploading artifact (DLL file)
+      uses: actions/upload-artifact@v2
+      with:
+        name: UEFN Unlocker
+        path: x64/Release/UEFN-Unlocker.dll
