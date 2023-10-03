@@ -13,13 +13,13 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Compile (Release)
+    - name: Compile
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /p:Configuration=Release
+      run: msbuild
 
-    - name: Uploading artifact (Release)
+    - name: Uploading artifact
       uses: actions/upload-artifact@v2
       with:
         name: UEFN Unlocker
-        path: x64/Release/UEFN-Unlocker.dll
+        path: build/UEFN-Unlocker.dll
         if-no-files-found: error

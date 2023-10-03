@@ -1,31 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.4.33205.214
+VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UEFN-Unlocker", "UEFN-Unlocker\UEFN-Unlocker.vcxproj", "{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UEFN-Unlocker", "UEFN-Unlocker.vcxproj", "{B1DCC1BC-95EB-41C4-AD28-0766B835CE88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}.Debug|x64.ActiveCfg = Debug|x64
-		{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}.Debug|x64.Build.0 = Debug|x64
-		{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}.Debug|x86.ActiveCfg = Debug|Win32
-		{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}.Debug|x86.Build.0 = Debug|Win32
-		{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}.Release|x64.ActiveCfg = Release|x64
-		{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}.Release|x64.Build.0 = Release|x64
-		{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}.Release|x86.ActiveCfg = Release|Win32
-		{FDCAE38B-1517-4FCC-BCB9-CC2F1D310D35}.Release|x86.Build.0 = Release|Win32
+		{B1DCC1BC-95EB-41C4-AD28-0766B835CE88}.Release|x64.ActiveCfg = Release|x64
+		{B1DCC1BC-95EB-41C4-AD28-0766B835CE88}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6266112A-D20E-4534-8487-A1EACA795F33}
+		SolutionGuid = {8D5DD4A6-1144-4D78-85FF-4A5150CCA544}
 	EndGlobalSection
 EndGlobal
