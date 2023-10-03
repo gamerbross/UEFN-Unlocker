@@ -64,7 +64,7 @@ void Main(const HMODULE hModule) {
     const char* JumpPlainSignatures[] =  // TODO: Get the jump address using a more dynamic way
     {
           "74 28 4C 8B 33" // 1st Cannot duplicate cooked asset
-        , "74 26 49 8B 04 24 49 8B CC FF 50 40 FF" // Folder is locked
+        , "74 26 49 8B 04 24 49 8B CC FF 50 40" // Folder is locked
     };
     for (auto jpsig : JumpPlainSignatures) {
         PatchPlainJump(Memcury::Scanner::FindPattern(jpsig).GetAs<LPVOID>());
