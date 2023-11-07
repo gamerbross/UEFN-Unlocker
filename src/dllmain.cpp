@@ -23,64 +23,54 @@ R"( _____  _____  ________  ________  ____  _____
 
 static auto currentProcess = GetCurrentProcess();
 
-void PatchPlainJump(LPVOID address) {
-    static const std::vector<BYTE> fromBuffer = { 0x74 };
-    static const std::vector<BYTE> toBuffer = { 0xEB };
-
-    WriteProcessMemory(currentProcess, address, toBuffer.data(), toBuffer.size(), NULL);
+inline void writeMemory(const LPVOID address, const std::vector<BYTE> toWrite) {
+    WriteProcessMemory(currentProcess, address, toWrite.data(), toWrite.size(), NULL);
 }
 
 void Main(const HMODULE hModule) {
     AllocConsole();
-    SetConsoleTitleA("UEFN Unlocker by gamerbross");
+    SetConsoleTitleA("UEFN Unlocker by gamerbross v1.0");
     FILE* pFile;
     freopen_s(&pFile, ("CONOUT$"), "w", stdout);
 
     std::cout << logo << "Made by @gamerbross_ on X/Twitter!\n";
 
-    const wchar_t* JumpEqualStrings[] = // 0F 84 -> 0F 83
-    {
-          L"Error_CannotModifyCookedAssets" // Cannot modify cooked assets
-        , L"NotifyBlockedByCookedAsset"     // Unable to Edit cooked asset
-        , L"Alias asset '{0}' is in a read only folder. Unable to edit read only assets."
-        , L"Alias asset '{0}' is in a folder that does not allow edits. Unable to edit read only assets."
-    };
-    for (auto jes : JumpEqualStrings) {
-        static const std::vector<BYTE> fromBuffer = { 0x0F, 0x84 };
-        static const std::vector<BYTE> toBuffer   = { 0x0F, 0x83 };
+    // rel16/32
+    static const std::vector<BYTE> jeBytes  = { 0x0F, 0x84 };
+    static const std::vector<BYTE> jneBytes = { 0x0F, 0x85 };
+    static const std::vector<BYTE> jlBytes  = { 0x0F, 0x8C };
 
-        WriteProcessMemory(currentProcess, Memcury::Scanner::FindStringRef(jes).ScanFor(fromBuffer, false).GetAs<LPVOID>(), toBuffer.data(), toBuffer.size(), NULL);
-    }
+    static const std::vector<BYTE> jnoBytes = { 0x0F, 0x81 }; // using jump if not overflow cus easier and should always work
+    static const std::vector<BYTE> nopBytes = { 0x90, 0x90 };
 
-    const wchar_t* JumpPlainStrings[] = // 74 -> EB
-    {
-          L"Error_CannotModifyGeneratedClasses" // Cannot modify generated classes
-        , L"Package is cooked or missing editor data\n"
-    };
-    for (auto jps : JumpPlainStrings) {
-        PatchPlainJump(Memcury::Scanner::FindStringRef(jps).ScanFor({ 0x74 }, false).GetAs<LPVOID>());
-    }
+    // rel8
+    static const std::vector<BYTE> xorByte  = { 0x32 };
+    static const std::vector<BYTE> je8Byte  = { 0x74 };
+    static const std::vector<BYTE> jmp8Byte = { 0x71 };
 
-    const char* JumpPlainSignatures[] =  // TODO: Get the jump address using a more dynamic way
-    {
-          "74 28 4C 8B 33" // 1st Cannot duplicate cooked asset
-        , "74 26 49 8B 04 24 49 8B CC FF 50 40" // Folder is locked
-    };
-    for (auto jpsig : JumpPlainSignatures) {
-        PatchPlainJump(Memcury::Scanner::FindPattern(jpsig).GetAs<LPVOID>());
-    }
+    for (auto str : { L"Error_CannotModifyCookedAssets", L"AssetCantBeEdited" } )
+        writeMemory(Memcury::Scanner::FindStringRef(str).ScanFor(xorByte).GetAs<LPVOID>(), nopBytes);
 
-    const wchar_t* JumpNotEqualStrings[] = // 0F 85 -> 0F 82
-    {
-            L"Folder '{0}' is read only and its contents cannot be edited"
-          , L"Asset '{0}' is in a folder that does not allow edits. Unable to edit read only assets."
-    };
-    for (auto jnes : JumpNotEqualStrings) {
-        static const std::vector<BYTE> fromBuffer = { 0x0F, 0x85 };
-        static const std::vector<BYTE> toBuffer   = { 0x0F, 0x81 };
+    writeMemory(
+        Memcury::Scanner::FindStringRef(L"Folder '{0}' is read only and its contents cannot be edited")
+        .ScanFor(jneBytes, false).GetAs<LPVOID>(),
+        jnoBytes
+    );
+    writeMemory(
+        Memcury::Scanner::FindStringRef(L"Alias asset '{0}' is in a read only folder. Unable to edit read only assets.")
+        .ScanFor(jeBytes, false).GetAs<LPVOID>(),
+        jnoBytes
+    );
 
-        WriteProcessMemory(currentProcess, Memcury::Scanner::FindStringRef(jnes).ScanFor(fromBuffer, false).GetAs<LPVOID>(), toBuffer.data(), toBuffer.size(), NULL);
-    }
+    writeMemory(
+        Memcury::Scanner::FindStringRef(L"CannotDuplicateCooked").FindFunctionBoundary().ScanFor(jlBytes).GetAs<LPVOID>(),
+        jnoBytes
+    );
+
+    writeMemory(
+        Memcury::Scanner::FindStringRef(L"Package is cooked or missing editor data\n").ScanFor(je8Byte, false).GetAs<LPVOID>(),
+        jmp8Byte
+    );
 
     std::cout << "Done!\n";
 }
