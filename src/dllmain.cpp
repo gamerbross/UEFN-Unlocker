@@ -23,8 +23,8 @@ R"( _____  _____  ________  ________  ____  _____
 
 static auto currentProcess = GetCurrentProcess();
 
-inline void writeMemory(const LPVOID address, const std::vector<BYTE> toWrite) {
-    WriteProcessMemory(currentProcess, address, toWrite.data(), toWrite.size(), NULL);
+inline void writeMemory(const uintptr_t address, const std::vector<BYTE> toWrite) {
+    WriteProcessMemory(currentProcess, (LPVOID)address, toWrite.data(), toWrite.size(), NULL);
 }
 
 void Main(const HMODULE hModule) {
@@ -46,29 +46,30 @@ void Main(const HMODULE hModule) {
     // rel8
     static const std::vector<BYTE> xorByte  = { 0x32 };
     static const std::vector<BYTE> je8Byte  = { 0x74 };
+    static const std::vector<BYTE> jb8Byte  = { 0x72 };
     static const std::vector<BYTE> jmp8Byte = { 0x71 };
 
     for (auto str : { L"Error_CannotModifyCookedAssets", L"AssetCantBeEdited" } )
-        writeMemory(Memcury::Scanner::FindStringRef(str).ScanFor(xorByte).GetAs<LPVOID>(), nopBytes);
+        writeMemory(Memcury::Scanner::FindStringRef(str).ScanFor(xorByte).Get(), nopBytes);
 
     writeMemory(
         Memcury::Scanner::FindStringRef(L"Folder '{0}' is read only and its contents cannot be edited")
-        .ScanFor(jneBytes, false).GetAs<LPVOID>(),
+        .ScanFor(jneBytes, false).Get(),
         jnoBytes
     );
     writeMemory(
         Memcury::Scanner::FindStringRef(L"Alias asset '{0}' is in a read only folder. Unable to edit read only assets.")
-        .ScanFor(jeBytes, false).GetAs<LPVOID>(),
+        .ScanFor(jeBytes, false).Get(),
         jnoBytes
     );
 
     writeMemory(
-        Memcury::Scanner::FindStringRef(L"CannotDuplicateCooked").FindFunctionBoundary().ScanFor(jlBytes).GetAs<LPVOID>(),
+        Memcury::Scanner::FindStringRef(L"CannotDuplicateCooked").FindFunctionBoundary().ScanFor(jlBytes).Get(),
         jnoBytes
     );
 
     writeMemory(
-        Memcury::Scanner::FindStringRef(L"Package is cooked or missing editor data\n").ScanFor(je8Byte, false).GetAs<LPVOID>(),
+        Memcury::Scanner::FindStringRef(L"Package is cooked or missing editor data\n").ScanFor(je8Byte, false).Get(),
         jmp8Byte
     );
 
