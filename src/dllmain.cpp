@@ -49,7 +49,7 @@ void Main(const HMODULE hModule) {
     static const std::vector<BYTE> jb8Byte  = { 0x72 };
     static const std::vector<BYTE> jmp8Byte = { 0x71 };
 
-    for (auto str : { L"Error_CannotModifyCookedAssets", L"AssetCantBeEdited" } )
+    for (auto str : { L"Error_CannotModifyCookedAssets", L"Unable to Edit Cooked asset" } )
         writeMemory(Memcury::Scanner::FindStringRef(str).ScanFor(xorByte).Get(), nopBytes);
 
     writeMemory(
