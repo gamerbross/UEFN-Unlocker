@@ -29,7 +29,7 @@ inline void writeMemory(const uintptr_t address, const std::vector<BYTE> toWrite
 
 void Main(const HMODULE hModule) {
     AllocConsole();
-    SetConsoleTitleA("UEFN Unlocker by gamerbross v1.1");
+    SetConsoleTitleA("UEFN Unlocker by gamerbross v1.2");
     FILE* pFile;
     freopen_s(&pFile, ("CONOUT$"), "w", stdout);
 
@@ -49,8 +49,15 @@ void Main(const HMODULE hModule) {
     static const std::vector<BYTE> jb8Byte  = { 0x72 };
     static const std::vector<BYTE> jmp8Byte = { 0x71 };
 
-    for (auto str : { L"Error_CannotModifyCookedAssets", L"Unable to Edit Cooked asset" } )
-        writeMemory(Memcury::Scanner::FindStringRef(str).ScanFor(xorByte).Get(), nopBytes);
+    writeMemory(Memcury::Scanner::FindStringRef(L"Error_CannotModifyCookedAssets")
+        .ScanFor(xorByte).Get(),
+        nopBytes
+    );
+
+    writeMemory(Memcury::Scanner::FindStringRef(L"AssetCantBeEdited")
+        .ScanFor(xorByte).Get(),
+        { 0xB3, 0x01 }
+    );
 
     writeMemory(
         Memcury::Scanner::FindStringRef(L"Folder '{0}' is read only and its contents cannot be edited")
