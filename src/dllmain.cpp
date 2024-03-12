@@ -54,7 +54,12 @@ void Main(const HMODULE hModule) {
         nopBytes
     );
 
-    writeMemory(Memcury::Scanner::FindStringRef(L"AssetCantBeEdited")
+    auto AssetCantBeEdited = Memcury::Scanner::FindStringRef(L"AssetCantBeEdited", false);
+    if (!AssetCantBeEdited.Get()) AssetCantBeEdited = Memcury::Scanner::FindStringRef(L"NotifyBlockedByCookedAsset", false);
+
+    MemcuryAssertM(AssetCantBeEdited.Get(), "Unable to Edit Cooked asset could not be found!");
+
+    writeMemory(AssetCantBeEdited
         .ScanFor(xorByte).Get(),
         { 0xB3, 0x01 }
     );
@@ -81,16 +86,32 @@ void Main(const HMODULE hModule) {
     );
 
     std::cout << "Done!\n";
+    std::cout << "Press F6 to close this window.\n";
+
+    while (!GetAsyncKeyState(VK_F6)) Sleep(100);
+
+    Beep(750, 100);
+
+    fclose(stdout);
+    if (pFile) fclose(pFile);
+    FreeConsole();
+
+    FreeLibraryAndExitThread(hModule, 0);
 }
 
 BOOL APIENTRY DllMain(const HMODULE hModule, const DWORD dwReason, const LPVOID lpReserved)
 {
-    if (dwReason != DLL_PROCESS_ATTACH)
-        return TRUE;
+    switch (dwReason) {
+    case DLL_PROCESS_ATTACH:
+        DisableThreadLibraryCalls(hModule);
 
-    auto mainThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Main, hModule, 0, NULL);
-    if (mainThread)
-        CloseHandle(mainThread);
+        if (auto thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Main, hModule, 0, NULL))
+            CloseHandle(thread);
+        break;
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+
 
     return TRUE;
 }
