@@ -90,8 +90,6 @@ void Main(const HMODULE hModule) {
 
     while (!GetAsyncKeyState(VK_F6)) Sleep(100);
 
-    Beep(750, 100);
-
     fclose(stdout);
     if (pFile) fclose(pFile);
     FreeConsole();
