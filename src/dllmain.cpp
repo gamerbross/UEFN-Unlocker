@@ -51,7 +51,7 @@ void Main(const HMODULE hModule) {
 
     writeMemory(Memcury::Scanner::FindStringRef(L"Error_CannotModifyCookedAssets")
         .ScanFor(xorByte).Get(),
-        nopBytes
+        { 0xB0, 0x01 } // mov al, 1
     );
 
     auto AssetCantBeEdited = Memcury::Scanner::FindStringRef(L"AssetCantBeEdited", false);
@@ -61,7 +61,7 @@ void Main(const HMODULE hModule) {
 
     writeMemory(AssetCantBeEdited
         .ScanFor(xorByte).Get(),
-        { 0xB3, 0x01 }
+        { 0xB3, 0x01 } // mov bl, 1
     );
 
     writeMemory(
